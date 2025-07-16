@@ -27,6 +27,7 @@ export const App = () => {
   const handleToggleChecked = ({ _id, isChecked }) => {
     Meteor.callAsync("tasks.toggleChecked", { _id, isChecked });
   };
+
   const handleDelete = ({ _id }) =>
     Meteor.callAsync("tasks.delete", _id);
 
@@ -41,7 +42,7 @@ export const App = () => {
 
   return (
     <div className="main">
-      <h1>📝️ Todo List</h1>
+      <h1>Todo App</h1>
       {user ? (
         <Fragment>
           <button className="logout-button" onClick={() => Meteor.logout()}>Log Out</button>
@@ -55,7 +56,7 @@ export const App = () => {
           )}
           <div className="filter">
             <button className="filter-button" onClick={() => setHideCompleted(!hideCompleted)}>
-              {hideCompleted ? 'Show All' : 'Hide Completed'}
+              {hideCompleted ? 'Show All Tasks' : 'Hide Completed Tasks'}
             </button>
           </div>
           <ul className="tasks">
