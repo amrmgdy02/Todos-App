@@ -9,11 +9,24 @@ import { EditTaskForm } from './EditTaskForm.jsx';
 
 export const App = () => {
   const user = useTracker(() => Meteor.user());
-  const hideCompletedTasks = { isChecked: { $ne: true } };
+  //const hideCompletedTasks = { isChecked: { $ne: true } };
+  //const hidePassedTasks = { dueDate: { $exists: true, $gte: new Date() } };
 
-  const [isRegistering, setIsRegistering] = useState(true);
+  const [isRegistering, setIsRegistering] = useState(false);
   const [hideCompleted, setHideCompleted] = useState(false);
+  const [hidePassed, setHidePassed] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+
+  let filter = {};
+  if (hideCompleted) {
+    filter.isChecked = { $ne: true };
+  }
+  if (hidePassed) {
+    filter.$or = [
+      { dueDate: null },
+      { dueDate: { $gte: new Date() } }
+    ];
+  }
 
   const handleUpdate = (task) => {
     setEditingTask(task);
@@ -33,7 +46,7 @@ export const App = () => {
 
   const isLoading = useSubscribe('tasks');
   const tasks = useTracker(() =>
-    TasksCollection.find(hideCompleted ? hideCompletedTasks : {}, { sort: { createdAt: -1 } }).fetch()
+    TasksCollection.find(filter, { sort: { createdAt: -1 } }).fetch()
   );
 
   if (isLoading()) {
@@ -57,6 +70,9 @@ export const App = () => {
           <div className="filter">
             <button className="filter-button" onClick={() => setHideCompleted(!hideCompleted)}>
               {hideCompleted ? 'Show All Tasks' : 'Hide Completed Tasks'}
+            </button>
+            <button className="filter-button" onClick={() => setHidePassed(!hidePassed)}>
+              {hidePassed ? 'Show All Tasks' : 'Hide Passed Tasks'}
             </button>
           </div>
           <ul className="tasks">
